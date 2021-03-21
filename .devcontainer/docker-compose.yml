@@ -1,0 +1,20 @@
+version: '3'
+services:
+  dev:
+    image: "tylergannon/node-dev"
+    depends_on:
+      - app
+      - api
+      - database
+      - redis
+    entrypoint: []
+    volumes:
+      - .:/code
+      - node_modules:/code/node_modules
+      - vscode_server:/home/tyler/.vscode-server
+      - ./profile/.histfile:/home/tyler/.histfile
+    environment:
+      HOST: astro-dev
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/db
+      NODE_ENV: development
+    command: /bin/sh -c "while sleep 1000; do :; done"
