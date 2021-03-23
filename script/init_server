@@ -1,0 +1,13 @@
+#!/bin/bash
+
+export PATH=${PATH}:node_modules/.bin
+export PAGER=less
+
+echo starting
+for script in /etc/init_server.d/*.sh ; do
+        echo $script
+        . $script
+done
+
+cmd=("$@")
+exec "${cmd[@]}"

@@ -1,18 +1,27 @@
-FROM tylergannon/node:latest
+FROM node:buster
 
 ARG USER=tyler
 ARG EMAIL="tgannon@gmail.com"
 ARG NAME="Tyler Gannon"
+ARG lazygit_version=0.26.1
+ARG arch=x86_64
 
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
         bash \
         curl \
         git \
-        lazygit \
+        less \
         sudo \
         vim \
+        wget \
         zsh \
-    && wget https://pnpm.js.org/pnpm.js \
+    && rm -rf /var/lib/apt/lists/* \
+    && wget -O lazygit.tar.gz https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_Linux_${arch}.tar.gz \
+    && tar zxpf ./lazygit.tar.gz \
+    && mv lazygit /usr/local/bin \
+    && rm -rf lazygit.tar.gz
+
+RUN wget https://pnpm.js.org/pnpm.js \
     && node ./pnpm.js add --global pnpm \
     && rm -rf pnpm.js \
     && pnpm i -g \
@@ -31,7 +40,6 @@ RUN apk add --no-cache \
     && cd .vim_temp && sudo -u ${USER} ./setup.sh && cd .. \
     && rm -rf .vim_temp
 
-ARG rebuild=now3
 RUN mkdir -p /etc/init_server.d && chmod -R o+rwx /etc/init_server.d
 COPY --chown=${USER}:${USER} ./profile/.zshrc /home/${USER}/.zshrc
 COPY ./script/init_server ./script/waitfor /usr/bin/
@@ -44,4 +52,6 @@ ENV EDITOR=vim \
 WORKDIR /code
 VOLUME [ "/code", "/code/node_modules" ]
 CMD [ "zsh" ]
-ENTRYPOINT [ "/usr/bin/init_server" ]
+
+# RUN groupadd --gid 1000 node \
+#   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
