@@ -32,8 +32,8 @@ RUN wget https://pnpm.js.org/pnpm.js \
         pure-prompt \
         ts-node \
         typescript \
-    && addgroup -g 1000 -S ${USER} \
-    && adduser -h /home/${USER} -s /bin/zsh -D -u 1000 -G ${USER} -S ${USER} \
+    && addgroup --gid 1000 --system ${USER} \
+    && adduser --home /home/${USER} --shell /bin/zsh --disabled-password --uid 1000 --gid 1000 --system ${USER} \
     && mkdir -p /code/node_modules /home/${USER}/.vscode-server /home/${USER}/.histfile \
     && chown -R 1000:1000 /home/${USER} /code \
     && echo "${USER} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${USER} \
@@ -53,6 +53,7 @@ ENV EDITOR=vim \
 WORKDIR /code
 VOLUME [ "/code", "/code/node_modules" ]
 CMD [ "zsh" ]
+ENTRYPOINT [ "/usr/bin/init_server" ]
 
 # RUN groupadd --gid 1000 node \
 #   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node

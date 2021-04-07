@@ -9,6 +9,7 @@ RUN apk add --no-cache \
         curl \
         git \
         lazygit \
+        p7zip \
         sudo \
         vim \
         zsh \
@@ -37,9 +38,10 @@ COPY --chown=${USER}:${USER} ./profile/.zshrc /home/${USER}/.zshrc
 COPY ./script/init_server ./script/waitfor /usr/bin/
 COPY --chown=${USER}:${USER} ./script/install_packages.sh /etc/init_server.d/
 USER ${USER}
+# RUN curl https://pyenv.run | bash
 
 ENV EDITOR=vim \
-    PATH=/code/script:${PATH}:/code/node_modules/.bin
+    PATH=/code/script:${PATH}:/code/node_modules/.bin:${HOME}/.pyenv/bin
 
 WORKDIR /code
 VOLUME [ "/code", "/code/node_modules" ]
